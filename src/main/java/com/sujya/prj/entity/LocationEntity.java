@@ -20,10 +20,10 @@ public class LocationEntity {
 
     @Id
     @Column(name="LOC_ID", nullable = false)
-    private Integer locId;
+    private String locId;
 
-    @Column(name="REGION", nullable = false)
-    private String region;
+    @Column(name="REGION_CD", nullable = false)
+    private String regionCd;
 
     @Column(name="TARGET", nullable = false)
     private String target;
@@ -34,8 +34,14 @@ public class LocationEntity {
     @Column(name="RECOM_LIMIT", nullable = false)
     private String limit;
 
+    @Column(name="RECOM_LIMIT_NO", nullable = false)
+    private Integer limitNo;
+
     @Column(name="RATE", nullable = false)
     private String rate;
+
+    @Column(name="AVG_RATE", nullable = false)
+    private Double avgRate;
 
     @Column(name="INSTITUTE", nullable = false)
     private String institute;

@@ -1,19 +1,22 @@
 package com.sujya.prj.controller;
 
+import com.sujya.prj.config.MultipartConfiguration;
 import com.sujya.prj.entity.LocationEntity;
 import com.sujya.prj.entity.LocationVO;
+import com.sujya.prj.entity.RegionVO;
 import com.sujya.prj.service.LocationService;
 import com.sujya.prj.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class PrjController {
 
     @Autowired
@@ -22,13 +25,22 @@ public class PrjController {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    MultipartConfiguration multipartConfiguration;
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ResponseEntity<String> login() {
 
         return new ResponseEntity<>("Hello", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @PostMapping(value = "/uploadFile")
+    public ResponseEntity<String> importCSV(@RequestParam("file") MultipartFile[] file){
+        String result = locationService.saveFile(file[0]);
+
+        return new ResponseEntity<String>("saved", HttpStatus.OK);
+    }
+    @GetMapping("/all")
     public ResponseEntity<List<LocationVO>> allLocation() {
 
         List<LocationVO> result = locationService.allLocation();
@@ -36,16 +48,16 @@ public class PrjController {
         return new ResponseEntity<List<LocationVO>>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/searchLocation", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public ResponseEntity<List<LocationVO>> searchLocation(@RequestBody LocationEntity loc) {
+    @PostMapping("/searchLocation")
+    public ResponseEntity<List<LocationVO>> searchLocation(@RequestBody RegionVO loc) {
 
         List<LocationVO> result = locationService.searchLocation(loc.getRegion());
 
         return new ResponseEntity<List<LocationVO>>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/updateLocation", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public ResponseEntity<LocationVO> updateLocation(@RequestBody LocationEntity loc) {
+    @PostMapping("/updateLocation")
+    public ResponseEntity<LocationVO> updateLocation(@RequestBody LocationVO loc) {
 
         LocationVO result = locationService.updateLocation(loc);
 
@@ -55,11 +67,18 @@ public class PrjController {
         return new ResponseEntity<LocationVO>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/limitTop/{k}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping("/limitTop/{k}")
     public ResponseEntity<List<String>> limitTop(@PathVariable int k) {
 
         List<String> result = locationService.limitK(k);
 
         return new ResponseEntity<List<String>>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/smallestRate")
+    public ResponseEntity<RegionVO> smallestRate(){
+        LocationVO temp = locationService.smallestRate();
+        RegionVO result = new RegionVO(temp.getRegion());
+        return new ResponseEntity<RegionVO>(result, HttpStatus.OK);
     }
 }

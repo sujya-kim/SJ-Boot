@@ -1,14 +1,18 @@
 package com.sujya.prj.initialize;
 
-import com.sujya.prj.entity.LocationEntity;
-import com.sujya.prj.entity.RoleEntity;
-import com.sujya.prj.entity.UserEntity;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.sujya.prj.config.SJException;
+import com.sujya.prj.entity.*;
 import com.sujya.prj.entity.repository.LocationRepository;
+import com.sujya.prj.entity.repository.RegionCodeRepository;
 import com.sujya.prj.entity.repository.RoleRepository;
 import com.sujya.prj.entity.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -26,7 +30,7 @@ public class DataInit implements ApplicationRunner {
     private RoleRepository roleRepository;
 
     @Autowired
-    private LocationRepository locationRepository;
+    private RegionCodeRepository regionCodeRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -55,24 +59,17 @@ public class DataInit implements ApplicationRunner {
             userRepository.save(p1);
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("assets/test_sample.csv"), "EUC-KR"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(COMMA_DELIMITER);
-                if (Character.isDigit(values[0].charAt(0))) {
-                    LocationEntity loc = new LocationEntity();
-                    loc.setLocId(Integer.parseInt(values[0]));
-                    loc.setRegion(values[1]);
-                    loc.setTarget(values[2]);
-                    loc.setUsage(values[3]);
-                    loc.setLimit(values[4]);
-                    loc.setRate(values[5]);
-                    loc.setInstitute(values[6].replace("\"", ""));
-                    loc.setMgmt(values[7]);
-                    loc.setReception(values[8].replace("\"", ""));
-                    locationRepository.save(loc);
-                }
-            }
+        try {
+            CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+            CsvMapper mapper = new CsvMapper();
+
+            File convFile = new File("assets/location_code.csv");
+            MappingIterator<RegionCodeEntity> readValues = mapper.reader(RegionCodeEntity.class).with(bootstrapSchema)
+                    .readValues(new InputStreamReader(new FileInputStream(convFile), "EUC-KR"));
+            List<RegionCodeEntity> result = readValues.readAll();
+            regionCodeRepository.saveAll(result);
+        }catch (Exception e){
+            throw new SJException("parseData", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 

@@ -16,6 +16,8 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = false)
 public class LocationVO {
 
+    private String locId;
+
     private String region;
 
     private String target;
@@ -32,8 +34,8 @@ public class LocationVO {
 
     private String reception;
 
-    public LocationVO(LocationEntity entity){
-        this.region = entity.getRegion();
+    public LocationVO(LocationEntity entity, RegionEntity regionEntity){
+        this.region = regionEntity.getRegionNm();
         this.target = entity.getTarget();
         this.usage = entity.getUsage();
         this.limit = entity.getLimit();

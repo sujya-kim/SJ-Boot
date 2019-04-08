@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "file",
+      "type": "com.sujya.prj.config.MultipartConfiguration",
+      "sourceType": "com.sujya.prj.config.MultipartConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "file.upload-dir",
+      "type": "java.lang.String",
+      "sourceType": "com.sujya.prj.config.MultipartConfiguration"
+    }
+  ],
+  "hints": []
+}
