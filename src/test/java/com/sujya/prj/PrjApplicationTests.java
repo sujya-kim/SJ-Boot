@@ -1,55 +1,50 @@
 package com.sujya.prj;
 
-import com.sujya.prj.entity.LocationEntity;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public class PrjApplicationTests {
-    @Value("${local.server.port}")
-    private int randomServerPort;
+    @Autowired
+    private MockMvc mvc;
+
+    private static String token;
 
     @Test
     public void contextLoads() {
     }
 
     @Test
-    public void testLoginSuccess() throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
+    public void testLoginSuccess() throws Exception {
+        String username = "sj";
+        String password = "sj";
 
-        final String baseUrl = "http://localhost:"+randomServerPort+"/login";
-        URI uri = new URI(baseUrl);
+        String body = "{ \"username\" : \"" + username + "\", \"password\": \"" + password + "\"}";
 
-        ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/auth/login")
+//        .content(body)).andDo(print());
+                .content(body)).andExpect(status().isOk()).andReturn();
 
-        //Verify request succeed
-        Assert.assertEquals(200, result.getStatusCodeValue());
+        String response = result.getResponse().getContentAsString();
+        String[] temp = response.split(":");
+        String tempToken = temp[1].replace("\"", "");
+        token = tempToken.replace("|", "");
+
+        mvc.perform(MockMvcRequestBuilders.get("/all")
+        .header("Authorization", "SJ " + token))
+                .andDo(print());
     }
 
-    @Test
-    public void testSearchRegion() throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-
-        final String baseUrl = "http://localhost:"+randomServerPort+"/search/강릉시";
-        URI uri = new URI(baseUrl);
-
-        ResponseEntity<List<LocationEntity>> result = restTemplate.exchange(baseUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<LocationEntity>>() {});
-
-        //Verify request succeed
-        Assert.assertEquals(200, result.getStatusCodeValue());
-    }
 }

@@ -1,12 +1,37 @@
 {
   "groups": [
     {
+      "name": "com.sujya.prj.jwt",
+      "type": "com.sujya.prj.auth.config.JwtSettings",
+      "sourceType": "com.sujya.prj.auth.config.JwtSettings"
+    },
+    {
       "name": "file",
       "type": "com.sujya.prj.config.MultipartConfiguration",
       "sourceType": "com.sujya.prj.config.MultipartConfiguration"
     }
   ],
   "properties": [
+    {
+      "name": "com.sujya.prj.jwt.refresh-token-exp-time",
+      "type": "java.lang.Integer",
+      "sourceType": "com.sujya.prj.auth.config.JwtSettings"
+    },
+    {
+      "name": "com.sujya.prj.jwt.token-expired-time",
+      "type": "java.lang.Integer",
+      "sourceType": "com.sujya.prj.auth.config.JwtSettings"
+    },
+    {
+      "name": "com.sujya.prj.jwt.token-issuer",
+      "type": "java.lang.String",
+      "sourceType": "com.sujya.prj.auth.config.JwtSettings"
+    },
+    {
+      "name": "com.sujya.prj.jwt.token-signing-key",
+      "type": "java.lang.String",
+      "sourceType": "com.sujya.prj.auth.config.JwtSettings"
+    },
     {
       "name": "file.upload-dir",
       "type": "java.lang.String",

@@ -44,16 +44,16 @@ public class DataInit implements ApplicationRunner {
 
         if (count2 == 0) {
             RoleEntity p1 = new RoleEntity();
-            p1.setRoleName("ADMIN");
+            p1.setRoleNm("ROLE_ADMIN");
 
             roleRepository.save(p1);
         }
 
         if (count == 0) {
             UserEntity p1 = new UserEntity();
-            p1.setUserName("sj");
-            p1.setUserId("sj");
-            p1.setUserRole(1);
+            p1.setUsername("sj");
+            p1.setName("sj");
+            p1.setRolId(1);
             p1.setPassword(bCryptPasswordEncoder.encode("sj"));
 
             userRepository.save(p1);

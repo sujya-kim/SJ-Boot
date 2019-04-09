@@ -21,10 +21,8 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
 
-    @Column(name="ROLE_NAME", nullable = false)
-    private String roleName;
+    @Column(name="ROLE_NM", nullable = false)
+    private String roleNm;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<UserEntity> users;
 
 }
