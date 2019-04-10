@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,6 +56,9 @@ public class LocationServiceImpl implements LocationService {
                     throw new SJException("Not Allowed Extension", HttpStatus.BAD_REQUEST.value());
                 }
             }
+            File tt = new File("assets/" + file.getOriginalFilename());
+            Files.deleteIfExists(tt.toPath());
+
 
             Files.copy(file.getInputStream(), rootLocation.resolve(file.getOriginalFilename()));
         }catch(Exception e){
@@ -67,6 +71,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     private List<LocationCSV> parseData(Class<LocationCSV> type, MultipartFile file){
+        List<LocationCSV> result = new ArrayList<>();
         try {
             CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
             CsvMapper mapper = new CsvMapper();
@@ -74,12 +79,14 @@ public class LocationServiceImpl implements LocationService {
             File convFile = new File("assets/" + file.getOriginalFilename());
             MappingIterator<LocationCSV> readValues = mapper.reader(type).with(bootstrapSchema)
                     .readValues(new InputStreamReader(new FileInputStream(convFile), "EUC-KR"));
-            List<LocationCSV> result = readValues.readAll();
-            saveData(result);
-            return result;
+            result = readValues.readAll();
         }catch (Exception e){
             throw new SJException("parseData", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }finally {
+            saveData(result);
+
         }
+        return result;
     }
 
     private void saveData(List<LocationCSV> list){

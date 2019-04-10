@@ -39,10 +39,10 @@ public class SJAuthenticationProvider implements AuthenticationProvider {
         String usrId = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
 
-        return authentication(usrId, password);
+        return authenticate(usrId, password);
     }
 
-    private Authentication authentication(String usrId, String password) throws  AuthenticationException{
+    public Authentication authenticate(String usrId, String password) throws  AuthenticationException{
 
         UserEntity userEntity = userRepository.findByUsername(usrId)
                 .orElseThrow(()->{

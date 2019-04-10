@@ -1,5 +1,6 @@
 package com.sujya.prj;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,29 +23,36 @@ public class PrjApplicationTests {
 
     private static String token;
 
-    @Test
-    public void contextLoads() {
-    }
+    private static String username = "sj";
+    private static String password = "sj";
 
-    @Test
-    public void testLoginSuccess() throws Exception {
-        String username = "sj";
-        String password = "sj";
 
+    @Before
+    public void beforeTest() throws Exception{
+        // 1. login and get jwt token
         String body = "{ \"username\" : \"" + username + "\", \"password\": \"" + password + "\"}";
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/auth/login")
-//        .content(body)).andDo(print());
                 .content(body)).andExpect(status().isOk()).andReturn();
 
         String response = result.getResponse().getContentAsString();
         String[] temp = response.split(":");
         String tempToken = temp[1].replace("\"", "");
-        token = tempToken.replace("|", "");
+        token = tempToken.replace("}", "");
 
-        mvc.perform(MockMvcRequestBuilders.get("/all")
-        .header("Authorization", "SJ " + token))
+    }
+
+
+    @Test
+    public void testRefreshSuccess() throws Exception {
+
+
+        mvc.perform(MockMvcRequestBuilders.post("/auth/token")
+        .header("Authorization", "Bearer " + token))
                 .andDo(print());
     }
+
+
+
 
 }
