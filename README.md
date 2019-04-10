@@ -1,9 +1,9 @@
 # Soojin-SpringBoot
 
 ## 개발환경 및 사용 라이브러리
-* Server : Java8, Spring Boot 1.5.10
+* Server : Java8, Spring Boot 1.5.10, Spring Security
 * DB : H2Base
-* 추가 사용 Library : JPA, Lombok
+* 추가 사용 Library : JPA, Lombok, Junit, jjwt
 
 -----
 
