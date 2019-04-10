@@ -1,4 +1,4 @@
-# Soojin-SpringBoot
+# SJ-Boot
 
 ## 개발환경 및 사용 라이브러리
 * Server : Java8, Spring Boot 1.5.10, Spring Security
