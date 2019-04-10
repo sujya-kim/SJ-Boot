@@ -37,6 +37,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String FORM_BASED_LOGIN_ENTRY_POINT="/auth/login";
     public static final String TOKEN_REFRESH_ENTRY_POINT="/auth/token";
 
+    public static final String H2_POINT="/h2-console/**";
+
+
     public static final String TOKEN_BASED_AUTH_ENTRY_POINT = "/**";
 
     @Autowired
@@ -87,7 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     protected JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() throws Exception{
-        List<String> pathsToSkip = Arrays.asList(FORM_BASED_LOGIN_ENTRY_POINT, TOKEN_REFRESH_ENTRY_POINT);
+        List<String> pathsToSkip = Arrays.asList(FORM_BASED_LOGIN_ENTRY_POINT, TOKEN_REFRESH_ENTRY_POINT, H2_POINT);
         SkipPathRequestMatcher matcher = new SkipPathRequestMatcher(pathsToSkip, TOKEN_BASED_AUTH_ENTRY_POINT);
         JwtTokenAuthenticationProcessingFilter filter = new JwtTokenAuthenticationProcessingFilter(failureHandler, tokenExtractor, matcher);
         filter.setAuthenticationManager(this.authenticationManager);
@@ -106,15 +109,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authorizeRequests()
-                        .antMatchers(FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
-                        .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
+                .authorizeRequests()
+                .antMatchers(FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
+                .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
+                .antMatchers(H2_POINT).permitAll()
                 .and()
-                    .authorizeRequests()
-                        .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
+                .authorizeRequests()
+                .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
+                .and()
+                .headers().frameOptions().disable()
                 .and()
                     .addFilterBefore(new CustomCorsFilter(), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(buildSJLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
